@@ -10,13 +10,14 @@ project(cudasamples)
 
 # compiler options, set c++11 (requires cmake 3.2 or higher)
 cmake_minimum_required(VERSION 3.2)
-set(CMAKE_CXX_STANDARD 11) 
+set(CMAKE_CXX_STANDARD 11)
 
 ###############################################################################
 ## find libraries #############################################################
 ###############################################################################
 
 # FIND LIBRARIES
+set(OpenCV_DIR /opt/opencv-git/lib/cmake/opencv4/)
 find_package(OpenCV REQUIRED)
 find_package(CUDA REQUIRED)
 
@@ -45,7 +46,7 @@ set(split_ "src/split.cu")
 ###############################################################################
 
 # COMPILER FLAGS AND DEFINITIONS
-set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_30,code=sm_30)
+#set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-gencode arch=compute_30,code=sm_30)
 set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS};-std=c++11)
 
 # SPECIFY TARGETS

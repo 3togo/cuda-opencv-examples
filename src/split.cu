@@ -25,7 +25,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/cuda/common.hpp>
-
+#include <opencv2/cudaarithm.hpp>
 #include "device_launch_parameters.h" // for linting
 
 
@@ -78,7 +78,7 @@ __device__ __forceinline__ void set_value(const int& val, char3& out) {
  * @return     Output
  */
 __device__ __forceinline__ uchar subtract_value(uchar in1, uchar in2) {
-	return in2-in1;
+    return in2-in1;
 }
 
 /**
@@ -102,7 +102,7 @@ __device__ __forceinline__ uchar3 subtract_value(uchar3 in1, uchar3 in2) {
  * @return     Output
  */
 __device__ __forceinline__ char subtract_value(char in1, char in2) {
-	return in2-in1;
+    return in2-in1;
 }
 
 /**
@@ -132,9 +132,9 @@ __global__ void split_kernel(cv::cuda::PtrStepSz<T>* const goutputs, int n, cons
   const int y = blockIdx.y * blockDim.y + threadIdx.y;
 
   for (int i = 0; i < n; ++i) {
-  	if ((y <= input.rows*(i+1)/n) && (y > input.rows*(i)/n)) {
-  		goutputs[i](y, x) = input(y, x);
-  	}
+    if ((y <= input.rows*(i+1)/n) && (y > input.rows*(i)/n)) {
+        goutputs[i](y, x) = input(y, x);
+    }
   }
 }
 
@@ -173,17 +173,17 @@ void upload_outputs(std::vector<cv::Mat>& outputs, std::vector<cv::cuda::GpuMat>
  */
 template <typename T>
 void call_split_kernel(cv::cuda::PtrStepSzb outputs, const cv::cuda::GpuMat& input) {
-  	// Specify a reasonable block size
-	const dim3 block(16,16);
+    // Specify a reasonable block size
+    const dim3 block(16,16);
 
-	// Calculate grid size to cover the whole image
-	const dim3 grid(cv::cuda::device::divUp(input.cols, block.x), cv::cuda::device::divUp(input.rows, block.y));
+    // Calculate grid size to cover the whole image
+    const dim3 grid(cv::cuda::device::divUp(input.cols, block.x), cv::cuda::device::divUp(input.rows, block.y));
 
-	// Launch kernel
-  	split_kernel<T><<<grid, block>>>((cv::cuda::PtrStepSz<T>*)outputs.ptr(), outputs.cols, static_cast<cv::cuda::PtrStepSz<T>>(input));
+    // Launch kernel
+    split_kernel<T><<<grid, block>>>((cv::cuda::PtrStepSz<T>*)outputs.ptr(), outputs.cols, static_cast<cv::cuda::PtrStepSz<T>>(input));
 
-  	// Get last error
-  	cudaSafeCall(cudaGetLastError());
+    // Get last error
+    cudaSafeCall(cudaGetLastError());
 }
 
 /**
@@ -197,12 +197,12 @@ void call_split_kernel(cv::cuda::PtrStepSzb outputs, const cv::cuda::GpuMat& inp
  * @param      goutputs  The goutputs
  */
 void split_kernel_init(cv::Mat& input, cv::cuda::GpuMat& ginput, std::vector<cv::Mat>& outputs, std::vector<cv::cuda::GpuMat>& goutputs) {
-	goutputs.reserve(outputs.size());
-	for (int i = 0; i < outputs.size(); ++i)	{
-		goutputs.push_back(cv::cuda::GpuMat(outputs[i].rows, outputs[i].cols, outputs[i].type()));
-	}
+    goutputs.reserve(outputs.size());
+    for (int i = 0; i < outputs.size(); ++i)    {
+        goutputs.push_back(cv::cuda::GpuMat(outputs[i].rows, outputs[i].cols, outputs[i].type()));
+    }
 
-  	ginput.create(input.rows, input.cols, input.type());
+    ginput.create(input.rows, input.cols, input.type());
 }
 
 /**
@@ -214,23 +214,23 @@ void split_kernel_init(cv::Mat& input, cv::cuda::GpuMat& ginput, std::vector<cv:
  * @param      goutputs  The goutputs
  */
 void split_kernel_exec(cv::Mat& input, cv::cuda::GpuMat& ginput, std::vector<cv::Mat>& outputs, std::vector<cv::cuda::GpuMat>& goutputs) {
-	// upload
-	cv::cuda::GpuMat goutput_collection;
-	upload_outputs(outputs, goutputs, goutput_collection);
-	ginput.upload(input);
+    // upload
+    cv::cuda::GpuMat goutput_collection;
+    upload_outputs(outputs, goutputs, goutput_collection);
+    ginput.upload(input);
 
-  	// execute 1
-  	for(int i = 0; i < goutputs.size(); ++i) {
-    	cv::cuda::multiply(goutputs[i], cv::Scalar(0.5,0.5,0.5), goutputs[i]);
-  	}
+    // execute 1
+    for(int i = 0; i < goutputs.size(); ++i) {
+        cv::cuda::multiply(goutputs[i], cv::Scalar(0.5,0.5,0.5), goutputs[i]);
+    }
 
-  	// execute 2
-  	call_split_kernel<char3>(goutput_collection, ginput);    
-  
-  	// download
-  	for (int i = 0; i < goutputs.size(); ++i) {
-  		goutputs[i].download(outputs[i]);
-  	}
+    // execute 2
+    call_split_kernel<char3>(goutput_collection, ginput);
+
+    // download
+    for (int i = 0; i < goutputs.size(); ++i) {
+        goutputs[i].download(outputs[i]);
+    }
 }
 
 /**
@@ -244,12 +244,12 @@ void split_kernel_exec(cv::Mat& input, cv::cuda::GpuMat& ginput, std::vector<cv:
  * @param      goutputs  The goutputs
  */
 void split_kernel_exit(cv::Mat& input, cv::cuda::GpuMat& ginput, std::vector<cv::Mat>& outputs, std::vector<cv::cuda::GpuMat>& goutputs) {
-	for (int i = 0; i < goutputs.size(); ++i) {
-		goutputs[i].release();
-	}
-	goutputs.clear();
+    for (int i = 0; i < goutputs.size(); ++i) {
+        goutputs[i].release();
+    }
+    goutputs.clear();
 
-	ginput.release();
+    ginput.release();
 }
 
 
@@ -257,38 +257,38 @@ void split_kernel_exit(cv::Mat& input, cv::cuda::GpuMat& ginput, std::vector<cv:
 
 
 int main() {
-	// Create input and output images
-	std::string imagePath = "../data/image.jpg";
-	cv::Mat input = cv::imread(imagePath,CV_LOAD_IMAGE_COLOR);
+    // Create input and output images
+    std::string imagePath = "../data/image.jpg";
+    cv::Mat input = cv::imread(imagePath,cv::IMREAD_COLOR);
 
-	if(input.empty())	{
-		std::cout<<"Image Not Found!"<<std::endl;
-		std::cin.get();
-		return -1;
-	}
+    if(input.empty())   {
+        std::cout<<"Image Not Found!"<<std::endl;
+        std::cin.get();
+        return -1;
+    }
 
-	std::vector<cv::Mat> outputs;
-	outputs.push_back(cv::Mat::zeros(input.size(), input.type()));
-	outputs[0].setTo(cv::Scalar(255,255,255));
-	outputs.push_back(cv::Mat::zeros(input.size(), input.type()));
-	outputs[1].setTo(cv::Scalar(255,255,255));
+    std::vector<cv::Mat> outputs;
+    outputs.push_back(cv::Mat::zeros(input.size(), input.type()));
+    outputs[0].setTo(cv::Scalar(255,255,255));
+    outputs.push_back(cv::Mat::zeros(input.size(), input.type()));
+    outputs[1].setTo(cv::Scalar(255,255,255));
 
-	// Create input and output gpu images
-	cv::cuda::GpuMat ginput;
-	std::vector<cv::cuda::GpuMat> goutputs;
+    // Create input and output gpu images
+    cv::cuda::GpuMat ginput;
+    std::vector<cv::cuda::GpuMat> goutputs;
 
-	// Call the wrapper function
-	split_kernel_init(input, ginput, outputs, goutputs);
-	split_kernel_exec(input, ginput, outputs, goutputs);
-	split_kernel_exit(input, ginput, outputs, goutputs);
+    // Call the wrapper function
+    split_kernel_init(input, ginput, outputs, goutputs);
+    split_kernel_exec(input, ginput, outputs, goutputs);
+    split_kernel_exit(input, ginput, outputs, goutputs);
 
-	// Show the input and output
-	cv::imshow("input",input);
-	cv::imshow("output1",outputs[0]);
-	cv::imshow("output2",outputs[1]);
-	
-	// Wait for key press
-	cv::waitKey();
+    // Show the input and output
+    cv::imshow("input",input);
+    cv::imshow("output1",outputs[0]);
+    cv::imshow("output2",outputs[1]);
 
-	return 0;
+    // Wait for key press
+    cv::waitKey();
+
+    return 0;
 }
