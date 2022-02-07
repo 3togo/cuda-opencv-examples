@@ -36,11 +36,7 @@ void upload_inputs(const std::vector<cv::Mat>& inputs, std::vector<cv::cuda::Gpu
 int main() {
     // Create input and output images
     std::string imagePath = "../data/image.jpg";
-<<<<<<< HEAD
     cv::Mat input1 = cv::imread(imagePath,cv::IMREAD_COLOR);
-=======
-    cv::Mat input1 = cv::imread(imagePath, cv::IMREAD_COLOR);   // CV_LOAD_IMAGE_COLOR
->>>>>>> 729a5ff677e98e49627d622e629ad2ce48129b6a
 
     if(input1.empty())  {
         std::cout<<"Image Not Found!"<<std::endl;

@@ -10,7 +10,6 @@ project(cudasamples)
 
 # compiler options, set c++11 (requires cmake 3.2 or higher)
 cmake_minimum_required(VERSION 3.2)
-<<<<<<< HEAD
 #set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_COMPILER "/usr/bin/g++-10")
 set(CMAKE_C_COMPILER "/usr/bin/gcc-10")
@@ -21,16 +20,12 @@ execute_process(COMMAND lsb_release -cs
 set(OpenCV_DIR /opt/opencv4/${codename}/lib/cmake/opencv4)
 
 
-=======
-set(CMAKE_CXX_STANDARD 11)
->>>>>>> 729a5ff677e98e49627d622e629ad2ce48129b6a
 
 ###############################################################################
 ## find libraries #############################################################
 ###############################################################################
 
 # FIND LIBRARIES
-set(OpenCV_DIR /opt/opencv-git/lib/cmake/opencv4/)
 find_package(OpenCV REQUIRED)
 find_package(CUDA REQUIRED)
 

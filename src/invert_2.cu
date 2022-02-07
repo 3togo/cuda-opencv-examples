@@ -195,10 +195,6 @@ void invert_kernel_2(const cv::Mat& input, cv::Mat& output) {
 int main() {
     // Read input image from the disk
     std::string imagePath = "../data/image.jpg";
-<<<<<<< HEAD
-=======
-    // cv::Mat input = cv::imread(imagePath,cv::CV_LOAD_IMAGE_COLOR);
->>>>>>> 729a5ff677e98e49627d622e629ad2ce48129b6a
     cv::Mat input = cv::imread(imagePath,cv::IMREAD_COLOR);
 
     if(input.empty())   {
