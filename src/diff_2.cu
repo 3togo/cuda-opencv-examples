@@ -162,7 +162,7 @@ void diff_kernel_exit(const cv::Mat& input1, const cv::Mat& input2, cv::Mat& out
 int main() {
 	// Read input image from the disk
 	std::string imagePath = "../data/image.jpg";
-	cv::Mat input1 = cv::imread(imagePath,CV_LOAD_IMAGE_COLOR);
+	cv::Mat input1 = cv::imread(imagePath,cv::IMREAD_COLOR);
 
 	if(input1.empty())	{
 		std::cout<<"Image Not Found!"<<std::endl;

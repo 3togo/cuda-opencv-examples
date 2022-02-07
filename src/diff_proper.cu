@@ -232,7 +232,7 @@ void diff_kernel_exit(std::vector<cv::Mat>& inputs, std::vector<cv::cuda::GpuMat
 int main() {
 	// Create input and output images
 	std::string imagePath = "../data/image.jpg";
-	cv::Mat input1 = cv::imread(imagePath,CV_LOAD_IMAGE_COLOR);
+	cv::Mat input1 = cv::imread(imagePath,cv::IMREAD_COLOR);
 
 	if(input1.empty())	{
 		std::cout<<"Image Not Found!"<<std::endl;

@@ -8,9 +8,9 @@
 #include <iostream>
 #include <string>
 
-#include <opencv2/opencv.hpp> 
-#include <opencv2/core/cuda/common.hpp> 
-                                        
+#include <opencv2/opencv.hpp>
+#include <opencv2/core/cuda/common.hpp>
+
 
 /**
  * @brief      Uploads inputs.
@@ -34,17 +34,17 @@ void upload_inputs(const std::vector<cv::Mat>& inputs, std::vector<cv::cuda::Gpu
 }
 
 int main() {
-	// Create input and output images
-	std::string imagePath = "../data/image.jpg";
-	cv::Mat input1 = cv::imread(imagePath,CV_LOAD_IMAGE_COLOR);
+    // Create input and output images
+    std::string imagePath = "../data/image.jpg";
+    cv::Mat input1 = cv::imread(imagePath,cv::IMREAD_COLOR);
 
-	if(input1.empty())	{
-		std::cout<<"Image Not Found!"<<std::endl;
-		std::cin.get();
-		return -1;
-	}
+    if(input1.empty())  {
+        std::cout<<"Image Not Found!"<<std::endl;
+        std::cin.get();
+        return -1;
+    }
 
-	cv::Mat input2 = cv::Mat::zeros(input1.size(), input1.type());
+    cv::Mat input2 = cv::Mat::zeros(input1.size(), input1.type());
   input1(cv::Rect(0,10, input1.cols,input1.rows-10)).copyTo(input2(cv::Rect(0,0,input1.cols,input1.rows-10)));
 
   std::vector<cv::Mat> inputs;
@@ -68,12 +68,12 @@ int main() {
   cv::cuda::PtrStepSzb* ppb_ginput_collection = (cv::cuda::PtrStepSzb*)pb_ginput_collection.ptr();
   cv::cuda::PtrStepSzb pb_ginput1cast = static_cast<cv::cuda::PtrStepSzb>(ginput1);
 
-	// Show the input and output
-	cv::imshow("Input1",input1);
-	cv::imshow("Input2",input2);
+    // Show the input and output
+    cv::imshow("Input1",input1);
+    cv::imshow("Input2",input2);
 
-	// Wait for key press
-	cv::waitKey();
+    // Wait for key press
+    cv::waitKey();
 
-	return 0;
+    return 0;
 }

@@ -25,7 +25,7 @@
 #include <iostream>
 #include <string>
 
-#include <opencv2/opencv.hpp>  
+#include <opencv2/opencv.hpp>
 #include <opencv2/core/cuda/common.hpp>
 
 
@@ -64,7 +64,7 @@ __device__ __forceinline__ void set_value(const int& val, uchar3& out) {
  * @return     Output
  */
 __device__ __forceinline__ uchar3 subtract_value(uchar3 in1, uchar3 in2) {
-	uchar3 out;
+    uchar3 out;
     out.x = in1.x - in2.x;
     out.y = in1.y - in2.y;
     out.z = in1.z - in2.z;
@@ -80,7 +80,7 @@ __device__ __forceinline__ uchar3 subtract_value(uchar3 in1, uchar3 in2) {
  * @return     Output
  */
 __device__ __forceinline__ uchar subtract_value(uchar in1, uchar in2) {
-	uchar out;
+    uchar out;
     out = in1 - in2;
     return out;
 }
@@ -126,7 +126,7 @@ __global__ void invert_kernel_2(const cv::cuda::PtrStepSz<T_in> input, cv::cuda:
  * @param      output  The output
  */
 void invert_kernel_2_init(const cv::Mat& input, cv::Mat& output) {
-	ginput.create(input.rows, input.cols, input.type());
+    ginput.create(input.rows, input.cols, input.type());
     goutput.create(output.rows, output.cols, output.type());
 }
 
@@ -139,8 +139,8 @@ void invert_kernel_2_init(const cv::Mat& input, cv::Mat& output) {
  * @param      output  The output
  */
 void invert_kernel_2_exit(const cv::Mat& input, cv::Mat& output) {
-	ginput.release();
-	goutput.release();
+    ginput.release();
+    goutput.release();
 }
 
 /**
@@ -150,22 +150,22 @@ void invert_kernel_2_exit(const cv::Mat& input, cv::Mat& output) {
  * @param[in]  output  The output
  */
 void call_invert_kernel_2(const cv::cuda::GpuMat& input, cv::cuda::GpuMat& output) {
-	// Assert
-	CV_Assert(input.channels() == 1 || input.channels() == 3); 
+    // Assert
+    CV_Assert(input.channels() == 1 || input.channels() == 3);
 
     // Specify a reasonable block size
-	const dim3 block(16,16);
+    const dim3 block(16,16);
 
-	// Calculate grid size to cover the whole image
-	const dim3 grid(cv::cuda::device::divUp(input.cols, block.x), cv::cuda::device::divUp(input.rows, block.y));
+    // Calculate grid size to cover the whole image
+    const dim3 grid(cv::cuda::device::divUp(input.cols, block.x), cv::cuda::device::divUp(input.rows, block.y));
 
-	// Launch kernel
-	if (input.channels() == 1) {
-	  invert_kernel_2<uchar, uchar><<<grid, block>>>(input, output);
-	}
-	else if (input.channels() == 3) {
-	  invert_kernel_2<uchar3, uchar3><<<grid, block>>>(input, output);
-	}
+    // Launch kernel
+    if (input.channels() == 1) {
+      invert_kernel_2<uchar, uchar><<<grid, block>>>(input, output);
+    }
+    else if (input.channels() == 3) {
+      invert_kernel_2<uchar3, uchar3><<<grid, block>>>(input, output);
+    }
 
   // Get last error
   cudaSafeCall(cudaGetLastError() );
@@ -184,7 +184,7 @@ void call_invert_kernel_2(const cv::cuda::GpuMat& input, cv::cuda::GpuMat& outpu
  */
 void invert_kernel_2(const cv::Mat& input, cv::Mat& output) {
   ginput.upload(input);
-  call_invert_kernel_2(ginput, goutput);    
+  call_invert_kernel_2(ginput, goutput);
   goutput.download(output);
 }
 
@@ -193,30 +193,30 @@ void invert_kernel_2(const cv::Mat& input, cv::Mat& output) {
 
 
 int main() {
-	// Read input image from the disk
-	std::string imagePath = "../data/image.jpg";
-	cv::Mat input = cv::imread(imagePath,CV_LOAD_IMAGE_COLOR);
+    // Read input image from the disk
+    std::string imagePath = "../data/image.jpg";
+    cv::Mat input = cv::imread(imagePath,cv::IMREAD_COLOR);
 
-	if(input.empty())	{
-		std::cout<<"Image Not Found!"<<std::endl;
-		std::cin.get();
-		return -1;
-	}
+    if(input.empty())   {
+        std::cout<<"Image Not Found!"<<std::endl;
+        std::cin.get();
+        return -1;
+    }
 
-	// Create output image
-	cv::Mat output = cv::Mat::zeros(input.rows,input.cols,CV_8UC3);
+    // Create output image
+    cv::Mat output = cv::Mat::zeros(input.rows,input.cols,CV_8UC3);
 
-	// Call the wrapper function
-	invert_kernel_2_init(input, output);
-	invert_kernel_2(input, output);
-	invert_kernel_2_exit(input, output);
+    // Call the wrapper function
+    invert_kernel_2_init(input, output);
+    invert_kernel_2(input, output);
+    invert_kernel_2_exit(input, output);
 
-	// Show the input and output
-	cv::imshow("Input",input);
-	cv::imshow("Output",output);
-	
-	// Wait for key press
-	cv::waitKey();
+    // Show the input and output
+    cv::imshow("Input",input);
+    cv::imshow("Output",output);
 
-	return 0;
+    // Wait for key press
+    cv::waitKey();
+
+    return 0;
 }
