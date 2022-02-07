@@ -8,3 +8,4 @@ build/
 *.fatbin
 
 *.sublime*
+data/image.jpg

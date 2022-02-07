@@ -71,7 +71,7 @@ __device__ __forceinline__ void set_value(const int& val, char3& out) {
  * @return     Output
  */
 __device__ __forceinline__ uchar subtract_value(uchar in1, uchar in2) {
-	return in2-in1;
+    return in2-in1;
 }
 
 /**
@@ -95,7 +95,7 @@ __device__ __forceinline__ uchar3 subtract_value(uchar3 in1, uchar3 in2) {
  * @return     Output
  */
 __device__ __forceinline__ char subtract_value(char in1, char in2) {
-	return in2-in1;
+    return in2-in1;
 }
 
 /**
@@ -160,17 +160,17 @@ void upload_inputs(const std::vector<cv::Mat>& inputs, std::vector<cv::cuda::Gpu
  */
 template <typename T>
 void call_diff_kernel(const cv::cuda::PtrStepSzb& inputs, cv::cuda::GpuMat& output) {
-  	// Specify a reasonable block size
-	const dim3 block(16,16);
+    // Specify a reasonable block size
+    const dim3 block(16,16);
 
-	// Calculate grid size to cover the whole image
-	const dim3 grid(cv::cuda::device::divUp(output.cols, block.x), cv::cuda::device::divUp(output.rows, block.y));
+    // Calculate grid size to cover the whole image
+    const dim3 grid(cv::cuda::device::divUp(output.cols, block.x), cv::cuda::device::divUp(output.rows, block.y));
 
-	// Launch kernel
-  	diff_kernel<T><<<grid, block>>>((cv::cuda::PtrStepSz<T>*)inputs.ptr(), inputs.cols, static_cast<cv::cuda::PtrStepSz<T>>(output));
+    // Launch kernel
+    diff_kernel<T><<<grid, block>>>((cv::cuda::PtrStepSz<T>*)inputs.ptr(), inputs.cols, static_cast<cv::cuda::PtrStepSz<T>>(output));
 
-  	// Get last error
-  	cudaSafeCall(cudaGetLastError());
+    // Get last error
+    cudaSafeCall(cudaGetLastError());
 }
 
 /**
@@ -182,12 +182,12 @@ void call_diff_kernel(const cv::cuda::PtrStepSzb& inputs, cv::cuda::GpuMat& outp
  * @param      output  The output
  */
 void diff_kernel_init(std::vector<cv::Mat>& inputs, std::vector<cv::cuda::GpuMat>& ginputs, cv::Mat& output, cv::cuda::GpuMat& goutput) {
-	ginputs.reserve(inputs.size());
-	for (int i = 0; i < inputs.size(); ++i)	{
-		ginputs.push_back(cv::cuda::GpuMat(inputs[i].rows, inputs[i].cols, inputs[i].type()));
-	}
+    ginputs.reserve(inputs.size());
+    for (int i = 0; i < inputs.size(); ++i) {
+        ginputs.push_back(cv::cuda::GpuMat(inputs[i].rows, inputs[i].cols, inputs[i].type()));
+    }
 
-  	goutput.create(output.rows, output.cols, output.type());
+    goutput.create(output.rows, output.cols, output.type());
 }
 
 /**
@@ -197,15 +197,15 @@ void diff_kernel_init(std::vector<cv::Mat>& inputs, std::vector<cv::cuda::GpuMat
  * @param      output  The output
  */
 void diff_kernel_exec(std::vector<cv::Mat>& inputs, std::vector<cv::cuda::GpuMat>& ginputs, cv::Mat& output, cv::cuda::GpuMat& goutput) {
-	// upload
-	cv::cuda::GpuMat ginput_collection;
-	upload_inputs(inputs, ginputs, ginput_collection);
+    // upload
+    cv::cuda::GpuMat ginput_collection;
+    upload_inputs(inputs, ginputs, ginput_collection);
 
-  	// execute
-  	call_diff_kernel<char3>(ginput_collection, goutput);    
-  
-  	// download
-  	goutput.download(output);
+    // execute
+    call_diff_kernel<char3>(ginput_collection, goutput);
+
+    // download
+    goutput.download(output);
 }
 
 /**
@@ -217,12 +217,12 @@ void diff_kernel_exec(std::vector<cv::Mat>& inputs, std::vector<cv::cuda::GpuMat
  * @param      output  The output
  */
 void diff_kernel_exit(std::vector<cv::Mat>& inputs, std::vector<cv::cuda::GpuMat>& ginputs, cv::Mat& output, cv::cuda::GpuMat& goutput) {
-	for (int i = 0; i < ginputs.size(); ++i) {
-		ginputs[i].release();
-	}
-	ginputs.clear();
+    for (int i = 0; i < ginputs.size(); ++i) {
+        ginputs[i].release();
+    }
+    ginputs.clear();
 
-	goutput.release();
+    goutput.release();
 }
 
 
@@ -230,41 +230,47 @@ void diff_kernel_exit(std::vector<cv::Mat>& inputs, std::vector<cv::cuda::GpuMat
 
 
 int main() {
+<<<<<<< HEAD
 	// Create input and output images
 	std::string imagePath = "../data/image.jpg";
 	cv::Mat input1 = cv::imread(imagePath,cv::IMREAD_COLOR);
+=======
+    // Create input and output images
+    std::string imagePath = "../data/image.jpg";
+    cv::Mat input1 = cv::imread(imagePath,cv::IMREAD_COLOR);
+>>>>>>> 729a5ff677e98e49627d622e629ad2ce48129b6a
 
-	if(input1.empty())	{
-		std::cout<<"Image Not Found!"<<std::endl;
-		std::cin.get();
-		return -1;
-	}
+    if(input1.empty())  {
+        std::cout<<"Image Not Found!"<<std::endl;
+        std::cin.get();
+        return -1;
+    }
 
-	cv::Mat input2 = cv::Mat::zeros(input1.size(), input1.type());
-  	input1(cv::Rect(0,10, input1.cols,input1.rows-10)).copyTo(input2(cv::Rect(0,0,input1.cols,input1.rows-10)));
+    cv::Mat input2 = cv::Mat::zeros(input1.size(), input1.type());
+    input1(cv::Rect(0,10, input1.cols,input1.rows-10)).copyTo(input2(cv::Rect(0,0,input1.cols,input1.rows-10)));
 
-  	std::vector<cv::Mat> inputs;
-  	inputs.push_back(input1);
-  	inputs.push_back(input2);
+    std::vector<cv::Mat> inputs;
+    inputs.push_back(input1);
+    inputs.push_back(input2);
 
-	cv::Mat output = cv::Mat::zeros(input1.size(), input1.type());
+    cv::Mat output = cv::Mat::zeros(input1.size(), input1.type());
 
-	// Create input and output gpu images
-	std::vector<cv::cuda::GpuMat> ginputs;
-	cv::cuda::GpuMat goutput;
+    // Create input and output gpu images
+    std::vector<cv::cuda::GpuMat> ginputs;
+    cv::cuda::GpuMat goutput;
 
-	// Call the wrapper function
-	diff_kernel_init(inputs, ginputs, output, goutput);
-	diff_kernel_exec(inputs, ginputs, output, goutput);
-	diff_kernel_exit(inputs, ginputs, output, goutput);
+    // Call the wrapper function
+    diff_kernel_init(inputs, ginputs, output, goutput);
+    diff_kernel_exec(inputs, ginputs, output, goutput);
+    diff_kernel_exit(inputs, ginputs, output, goutput);
 
-	// Show the input and output
-	cv::imshow("Input1",input1);
-	cv::imshow("Input2",input2);
-	cv::imshow("Output",output);
-	
-	// Wait for key press
-	cv::waitKey();
+    // Show the input and output
+    cv::imshow("Input1",input1);
+    cv::imshow("Input2",input2);
+    cv::imshow("Output",output);
 
-	return 0;
+    // Wait for key press
+    cv::waitKey();
+
+    return 0;
 }
